@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-2: #f7f7f8;
+      --border: #ececee;
+      --text: #1c1c1f;
+      --muted: #6b6b73;
+      --red: #e11d2e;
+      --red-dark: #b91524;
+      --red-soft: #fdecee;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Nav */
+    header {
+      height: 60px;
+      display: flex;
+      align-items: stretch;
+      gap: 28px;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color .15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab svg { width: 17px; height: 17px; }
+    .tab.active { color: var(--red); }
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--red);
+    }
+
+    /* Layout */
+    main { padding: 12vh 24px 96px; display: flex; flex-direction: column; align-items: center; }
+    .view[hidden] { display: none; }
+
+    /* Clock */
+    .clock { text-align: center; margin-bottom: 36px; user-select: none; }
+    .time { font-size: 5.25rem; line-height: 1; font-weight: 600; letter-spacing: -0.03em; }
+    .date {
+      margin-top: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      color: var(--muted); font-size: 0.95rem;
+    }
+    .date i { display: inline-block; width: 24px; height: 2px; border-radius: 2px; background: var(--red); }
+
+    /* Search */
+    form.search {
+      width: 100%; max-width: 650px; height: 56px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 8px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: 0 6px 24px -12px rgba(0,0,0,.18);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    form.search:focus-within {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px var(--red-soft), 0 6px 24px -12px rgba(0,0,0,.18);
+    }
+    form.search > svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+    form.search input {
+      flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+      font: inherit; font-size: 16px; color: var(--text);
+    }
+    form.search input::placeholder { color: var(--muted); }
+    form.search button {
+      flex: none; width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--red); color: #fff; transition: background .15s;
+    }
+    form.search button:hover { background: var(--red-dark); }
+    form.search button svg { width: 17px; height: 17px; }
+
+    /* Link cards */
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+    .quick { width: 100%; max-width: 640px; margin-top: 48px; }
+    .card {
+      width: 88px; height: 96px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      border: 1px solid transparent; border-radius: 14px;
+      font-size: 0.82rem; font-weight: 500;
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+    .card:hover { border-color: var(--red); background: var(--red-soft); transform: translateY(-2px); }
+    .badge {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-2); border: 1px solid var(--border);
+      font-weight: 600; color: var(--red);
+    }
+
+    /* Apps */
+    .apps-head { width: 100%; max-width: 860px; text-align: center; }
+    .apps-head h1 { font-size: 1.6rem; font-weight: 600; }
+    .apps-head p { color: var(--muted); margin: 6px 0 22px; }
+    .apps-grid { width: 100%; max-width: 860px; margin-top: 28px; gap: 16px; }
+    .app {
+      width: 200px; padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      border: 1px solid var(--border); border-radius: 18px; background: var(--surface);
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+    }
+    .app:hover { border-color: var(--red); transform: translateY(-3px); box-shadow: 0 12px 28px -16px rgba(225,29,46,.45); }
+    .app .badge { width: 48px; height: 48px; border-radius: 14px; }
+    .app b { font-size: 1rem; }
+    .app span { font-size: 0.85rem; color: var(--muted); margin-top: -8px; }
+
+    footer {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      text-align: center; padding: 16px; font-size: 0.8rem; color: var(--muted);
+      background: linear-gradient(to top, #fff 60%, transparent);
+      pointer-events: none;
+    }
+
+    @media (max-width: 560px) {
+      .time { font-size: 3.8rem; }
+      header { padding: 0 20px; gap: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="tab active" data-view="home" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      Home
+    </button>
+    <button class="tab" data-view="apps" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Apps
+    </button>
+  </header>
+
+  <main>
+    <section class="view" id="home">
+      <div class="clock">
+        <div class="time" id="time"></div>
+        <div class="date"><i></i><span id="date"></span><i></i></div>
+      </div>
+
+      <form class="search" id="search" autocomplete="off">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="q" type="text" placeholder="Search the web or enter a URL" aria-label="Search">
+        <button type="submit" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        </button>
+      </form>
+
+      <div class="quick grid" id="quick"></div>
+    </section>
+
+    <section class="view" id="apps" hidden>
+      <div class="apps-head">
+        <h1>Apps</h1>
+        <p>Your shortcuts in one place.</p>
+        <form class="search" id="filter" autocomplete="off" onsubmit="return false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input id="f" type="text" placeholder="Filter apps" aria-label="Filter apps" style="padding:0">
+        </form>
+      </div>
+      <div class="apps-grid grid" id="appgrid"></div>
+    </section>
+  </main>
+
+  <footer>Links open in this tab.</footer>
+
+  <script>
+    (function () {
+      // Edit these lists to change what appears on the page.
+      var QUICK = [
+        { name: 'Google', url: 'https://www.google.com' },
+        { name: 'YouTube', url: 'https://www.youtube.com' },
+        { name: 'Wikipedia', url: 'https://www.wikipedia.org' },
+        { name: 'GitHub', url: 'https://github.com' }
+      ];
+      var APPS = [
+        { name: 'Mail', desc: 'Email', url: 'https://mail.google.com' },
+        { name: 'Maps', desc: 'Navigation', url: 'https://maps.google.com' },
+        { name: 'Drive', desc: 'Files', url: 'https://drive.google.com' },
+        { name: 'Calendar', desc: 'Schedule', url: 'https://calendar.google.com' },
+        { name: 'Translate', desc: 'Language', url: 'https://translate.google.com' },
+        { name: 'News', desc: 'Headlines', url: 'https://news.google.com' }
+      ];
+      var ENGINE = 'https://www.google.com/search?q=';
+
+      function el(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text) n.textContent = text;
+        return n;
+      }
+
+      function card(item, big) {
+        var a = el('a', big ? 'app' : 'card');
+        a.href = item.url;
+        a.rel = 'noopener noreferrer';
+        a.appendChild(el('div', 'badge', item.name.charAt(0)));
+        if (big) {
+          a.appendChild(el('b', '', item.name));
+          a.appendChild(el('span', '', item.desc || ''));
+        } else {
+          a.appendChild(el('div', '', item.name));
+        }
+        return a;
+      }
+
+      var quick = document.getElementById('quick');
+      QUICK.forEach(function (q) { quick.appendChild(card(q, false)); });
+
+      var grid = document.getElementById('appgrid');
+      function renderApps(filter) {
+        grid.textContent = '';
+        var f = (filter || '').toLowerCase().replace(/\s/g, '');
+        APPS.filter(function (a) { return a.name.toLowerCase().replace(/\s/g, '').indexOf(f) !== -1; })
+            .forEach(function (a) { grid.appendChild(card(a, true)); });
+      }
+      renderApps('');
+      document.getElementById('f').addEventListener('input', function (e) { renderApps(e.target.value); });
+
+      // Clock
+      function tick() {
+        var d = new Date(), h = d.getHours();
+        var g = h < 5 ? 'Good evening' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+        document.getElementById('time').textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        document.getElementById('date').textContent =
+          g + ' · ' + d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+      }
+      tick();
+      setInterval(tick, 15000);
+
+      // Search: URL-looking input opens that address, anything else is a search.
+      document.getElementById('search').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = document.getElementById('q').value.trim();
+        if (!v) return;
+        var isUrl = /^https?:\/\//i.test(v) || /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(v);
+        window.location.href = isUrl ? (/^https?:\/\//i.test(v) ? v : 'https://' + v) : ENGINE + encodeURIComponent(v);
+      });
+
+      // Tabs (Home / Apps)
+      var tabs = document.querySelectorAll('.tab');
+      function show(name) {
+        document.querySelectorAll('.view').forEach(function (v) { v.hidden = v.id !== name; });
+        tabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-view') === name); });
+        history.replaceState(null, '', name === 'home' ? location.pathname : '#' + name);
+      }
+      tabs.forEach(function (t) {
+        t.addEventListener('click', function () { show(t.getAttribute('data-view')); });
+      });
+      show(location.hash === '#apps' ? 'apps' : 'home');
+    })();
+  </script>
+</body>
+</html>
